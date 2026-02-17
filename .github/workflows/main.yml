@@ -1,0 +1,45 @@
+name: B12 Application Submission
+
+on:
+  workflow_dispatch:   # Allows manual triggering from the Actions tab
+
+jobs:
+  submit:
+    name: Submit B12 Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run submission script
+        env:
+          # ---------------------------------------------------------------
+          # Non-secret applicant info — edit these directly or move to
+          # repository variables (Settings → Secrets and variables → Actions
+          # → Variables tab) if you prefer not to hard-code them here.
+          # ---------------------------------------------------------------
+          APPLICANT_NAME: "Grayson Robbins"
+          APPLICANT_EMAIL: ${{ secrets.APPLICANT_EMAIL }}
+          # Replace with your public resume URL (LinkedIn, GitHub PDF, etc.)
+          RESUME_LINK: "https://github.com/Grayson-Robbins/gar_b12_application/blob/main/SWE_Resume.PDF"
+          # Replace with the full URL of THIS repository
+          REPOSITORY_LINK: "https://github.com/Grayson-Robbins/gar_b12_application"
+          # GitHub automatically injects the run ID; we build the full URL here.
+          ACTION_RUN_LINK: "https://github.com/Grayson-Robbins/gar_b12_application/actions/runs/${{ github.run_id }}"
+          # ---------------------------------------------------------------
+          # Secret — store this under:
+          #   Settings → Secrets and variables → Actions → New repository secret
+          #   Name: SIGNING_SECRET   Value: hello-there-from-b12
+          # ---------------------------------------------------------------
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+
+        run: python submit.py
